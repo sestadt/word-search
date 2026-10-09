@@ -23,9 +23,8 @@ Todo ??
 - 
 
 Stopped on and next step
-- finished css style word bank
-- continue drag and highlight text to select word and cross out word in list
-    - next step: mark the start of a selection
+- finished drag and highlight text to select word and cross out word in list
+- fix reset when game resets in 
 - create game loop
     - score
-
+    - alert for finishing game

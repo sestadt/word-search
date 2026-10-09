@@ -22,6 +22,40 @@ function createGrid() {
     }
 }
 
+function clearSelection() {
+    selectedCells.forEach(cell => cell.classList.remove("selected"));
+    selectedCells = [];
+}
+
+function getCellsInLine(startCell, endCell) {
+    const startRow = Number(startCell.dataset.row);
+    const startCol = Number(startCell.dataset.col);
+    const endRow = Number(endCell.dataset.row);
+    const endCol = Number(endCell.dataset.col);
+    const rowDistance = endRow - startRow;
+    const colDistance = endCol - startCol;
+
+    if (rowDistance !== 0 &&
+        colDistance !== 0 &&
+        Math.abs(rowDistance) !== Math.abs(colDistance)
+    ) {
+        return [];
+    }
+
+    const length = Math.max(Math.abs(rowDistance), Math.abs(colDistance));
+    const rowStep = Math.sign(rowDistance);
+    const colStep = Math.sign(colDistance);
+    const cells = [];
+    for(i = 0; i <= length; i++) {
+        const row = startRow + i * rowStep;
+        const col = startCol + i * colStep;
+        const index = row * gridCols + col;
+        cells.push(gridContainer.children[index]);
+    }
+
+    return cells;
+}
+
 function shuffle () {
     const cells = document.querySelectorAll(".grid-cell");
 
@@ -90,12 +124,74 @@ function shuffle () {
 }
 
 createGrid();
+
+const allCells = document.querySelectorAll(".grid-cell");
+
+allCells.forEach(cell => {
+    cell.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        isSelecting = true;
+        dragStart = cell;
+        clearSelection();
+        selectedCells = [cell];
+        cell.classList.add("selected");
+    });
+
+    cell.addEventListener("pointerenter", () => {
+        if (!isSelecting || !dragStart) return;
+
+        const path = getCellsInLine(dragStart, cell);
+
+        if (!path.length) return;
+
+        selectedCells.forEach(el => el.classList.remove("selected"));
+        selectedCells = path;
+        selectedCells.forEach(el => el.classList.add("selected"));
+    });
+});
+
+document.addEventListener("pointerup", () => {
+    if (!isSelecting) return;
+
+    isSelecting = false;
+
+    const selectedWord = selectedCells
+    .map(cell => cell.textContent.trim())
+    .join("")
+    .toLowerCase();
+
+    const reversedWord = [...selectedWord].reverse().join("");
+
+    const match = words.find(word =>
+        word === selectedWord || word === reversedWord
+    );
+
+    if (match) {
+        foundWords.add(match);
+        selectedCells.forEach(cell => {
+            cell.classList.add("found");
+            cell.classList.remove("selected");
+        });
+
+        const wordItem = document.querySelector(`[data-word="${match}"]`);
+        if (wordItem) {
+            wordItem.classList.add("crossed-out")
+        }
+    } else {
+        selectedCells.forEach(cell => cell.classList.remove("selected"));
+    }
+
+    selectedCells = [];
+    dragStart = null;
+});
+
 shuffle();
 
 const resetButton = document.querySelector("#reset-btn");
 resetButton.addEventListener("click", () => {
     shuffle();
     displayWordBank();
+    clearSelection();
 });
 
 const wordBank = document.querySelector("#word-bank-list");
@@ -106,9 +202,7 @@ function displayWordBank () {
     for (let i = 0; i < words.length; i++) {
         const listItem = document.createElement("li");
         listItem.textContent = words[i].toUpperCase();
-        listItem.addEventListener("click", () => {
-            listItem.classList.toggle("crossed-out");
-        });
+        listItem.dataset.word = words[i];
 
         wordBank.appendChild(listItem);
     }
