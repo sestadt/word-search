@@ -23,8 +23,7 @@ Todo ??
 - 
 
 Stopped on and next step
-- finished drag and highlight text to select word and cross out word in list
-- fix reset when game resets in 
+- finished reset to clear the board 
 - create game loop
-    - score
+    - continue working on: score: add one point when finished, if reset is pushed more than once it goes back to zero
     - alert for finishing game

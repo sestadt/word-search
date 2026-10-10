@@ -3,10 +3,12 @@ const gridRows = 12;
 const gridCols = 12;
 const words = ["apple", "peach", "pear", "strawberry", "watermelon", "grapes", "kiwi", "banana", "pineapple", "mango"];
 const gridContainer = document.querySelector(".grid-container");
+const scoreDisplay = document.querySelector("#score-display");
 let isSelecting = false;
 let dragStart = null;
 let selectedCells = [];
 const foundWords = new Set();
+let score = 0;
 
 function createGrid() {
     gridContainer.style.gridTemplateColumns = `repeat(${gridCols}, 20px)`;
@@ -189,9 +191,18 @@ shuffle();
 
 const resetButton = document.querySelector("#reset-btn");
 resetButton.addEventListener("click", () => {
+    isSelecting = false;
+    dragStart = null;
+    selectedCells = [];
+
+    document.querySelectorAll(".grid-cell").forEach(cell => {
+        cell.classList.remove("selected");
+        cell.classList.remove("found");
+    });
+
+    foundWords.clear();
     shuffle();
     displayWordBank();
-    clearSelection();
 });
 
 const wordBank = document.querySelector("#word-bank-list");
