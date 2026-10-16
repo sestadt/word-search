@@ -23,7 +23,5 @@ Todo ??
 - 
 
 Stopped on and next step
-- finished reset to clear the board 
-- create game loop
-    - continue working on: score: add one point when finished, if reset is pushed more than once it goes back to zero
-    - alert for finishing game
+- continue: alert for finishing game
+    - fix bug: only mark correct for entire word not partial

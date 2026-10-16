@@ -3,12 +3,10 @@ const gridRows = 12;
 const gridCols = 12;
 const words = ["apple", "peach", "pear", "strawberry", "watermelon", "grapes", "kiwi", "banana", "pineapple", "mango"];
 const gridContainer = document.querySelector(".grid-container");
-const scoreDisplay = document.querySelector("#score-display");
 let isSelecting = false;
 let dragStart = null;
 let selectedCells = [];
 const foundWords = new Set();
-let score = 0;
 
 function createGrid() {
     gridContainer.style.gridTemplateColumns = `repeat(${gridCols}, 20px)`;
@@ -170,6 +168,10 @@ document.addEventListener("pointerup", () => {
 
     if (match) {
         foundWords.add(match);
+        if (foundWords.size === words.length) {
+            alert("Congradulations, You Finished The Game!");
+        }
+
         selectedCells.forEach(cell => {
             cell.classList.add("found");
             cell.classList.remove("selected");
