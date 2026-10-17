@@ -168,9 +168,6 @@ document.addEventListener("pointerup", () => {
 
     if (match) {
         foundWords.add(match);
-        if (foundWords.size === words.length) {
-            alert("Congradulations, You Finished The Game!");
-        }
 
         selectedCells.forEach(cell => {
             cell.classList.add("found");
@@ -181,6 +178,11 @@ document.addEventListener("pointerup", () => {
         if (wordItem) {
             wordItem.classList.add("crossed-out")
         }
+
+        if (foundWords.size === words.length) {
+            alert("Congratulations! You found all the words!");
+        }
+
     } else {
         selectedCells.forEach(cell => cell.classList.remove("selected"));
     }

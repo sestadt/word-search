@@ -1,4 +1,10 @@
 h1 {
+    font-size: 35px;
+    text-transform: uppercase;
+    font-family: "Lilita One", cursive;
+    text-shadow: -2px -2px 0 #00ffdd;
+    font-weight: bold;
+    display: block;
     text-align: center;
 }
 
@@ -52,4 +58,8 @@ h2 {
 #word-bank-list li.crossed-out {
     text-decoration: line-through;
     opacity: 0.5;
+}
+
+footer {
+    text-align: center;
 }
