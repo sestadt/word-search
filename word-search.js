@@ -5,13 +5,11 @@ const words = ["apple", "peach", "pear", "strawberry", "watermelon", "grapes", "
 const gridContainer = document.querySelector(".grid-container");
 let isSelecting = false;
 let dragStart = null;
+let activePointerId = null;
 let selectedCells = [];
 const foundWords = new Set();
 
 function createGrid() {
-    gridContainer.style.gridTemplateColumns = `repeat(${gridCols}, 20px)`;
-    gridContainer.style.gridTemplateRows = `repeat(${gridRows}, 20px)`;
-
     for (let i = 0; i < gridRows * gridCols; i++) {
         const cell = document.createElement("div");
         cell.classList.add("grid-cell");
@@ -25,6 +23,17 @@ function createGrid() {
 function clearSelection() {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
+}
+
+function updateSelection(cell) {
+    if (!isSelecting || !dragStart) return;
+
+    const path = getCellsInLine(dragStart, cell);
+    if (!path.length) return;
+
+    selectedCells.forEach(el => el.classList.remove("selected"));
+    selectedCells = path;
+    selectedCells.forEach(el => el.classList.add("selected"));
 }
 
 function getCellsInLine(startCell, endCell) {
@@ -46,7 +55,7 @@ function getCellsInLine(startCell, endCell) {
     const rowStep = Math.sign(rowDistance);
     const colStep = Math.sign(colDistance);
     const cells = [];
-    for(i = 0; i <= length; i++) {
+    for (let i = 0; i <= length; i++) {
         const row = startRow + i * rowStep;
         const col = startCol + i * colStep;
         const index = row * gridCols + col;
@@ -131,29 +140,28 @@ allCells.forEach(cell => {
     cell.addEventListener("pointerdown", (event) => {
         event.preventDefault();
         isSelecting = true;
+        activePointerId = event.pointerId;
         dragStart = cell;
         clearSelection();
         selectedCells = [cell];
         cell.classList.add("selected");
     });
-
-    cell.addEventListener("pointerenter", () => {
-        if (!isSelecting || !dragStart) return;
-
-        const path = getCellsInLine(dragStart, cell);
-
-        if (!path.length) return;
-
-        selectedCells.forEach(el => el.classList.remove("selected"));
-        selectedCells = path;
-        selectedCells.forEach(el => el.classList.add("selected"));
-    });
 });
 
-document.addEventListener("pointerup", () => {
-    if (!isSelecting) return;
+document.addEventListener("pointermove", (event) => {
+    if (!isSelecting || event.pointerId !== activePointerId) return;
+
+    const cell = document.elementFromPoint(event.clientX, event.clientY)?.closest(".grid-cell");
+    if (cell instanceof HTMLElement) {
+        updateSelection(cell);
+    }
+});
+
+document.addEventListener("pointerup", (event) => {
+    if (!isSelecting || event.pointerId !== activePointerId) return;
 
     isSelecting = false;
+    activePointerId = null;
 
     const selectedWord = selectedCells
     .map(cell => cell.textContent.trim())
@@ -168,6 +176,8 @@ document.addEventListener("pointerup", () => {
 
     if (match) {
         foundWords.add(match);
+        selectedCells[0].classList.add("found-endpoint");
+        selectedCells[selectedCells.length - 1].classList.add("found-endpoint");
 
         selectedCells.forEach(cell => {
             cell.classList.add("found");
@@ -191,6 +201,15 @@ document.addEventListener("pointerup", () => {
     dragStart = null;
 });
 
+document.addEventListener("pointercancel", (event) => {
+    if (!isSelecting || event.pointerId !== activePointerId) return;
+
+    isSelecting = false;
+    activePointerId = null;
+    dragStart = null;
+    clearSelection();
+});
+
 shuffle();
 
 const resetButton = document.querySelector("#reset-btn");
@@ -202,6 +221,7 @@ resetButton.addEventListener("click", () => {
     document.querySelectorAll(".grid-cell").forEach(cell => {
         cell.classList.remove("selected");
         cell.classList.remove("found");
+        cell.classList.remove("found-endpoint");
     });
 
     foundWords.clear();
