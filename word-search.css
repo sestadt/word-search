@@ -63,12 +63,31 @@ h2 {
     align-items: center;
 }
 
-.grid-cell.selected {
-    background-color: rgb(0, 153, 255);
+.grid-cell.selected,
+.grid-cell.found {
+    position: relative;
+    isolation: isolate;
 }
 
-.grid-cell.found {
-    background-color: rgb(47, 195, 253);
+.grid-cell.selected::before, 
+.grid-cell.found::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 55%;
+    border-radius: 999px;
+    transform: translate(-50%, -50%);
+}
+
+.grid-cell.selected::before {
+    background-color: rgba(0, 153, 255, 0.75);
+}
+
+.grid-cell.found::before {
+    background-color: rgba(47, 195, 253, 0.75);
 }
 
 .grid-cell.found-endpoint {

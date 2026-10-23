@@ -7,3 +7,4 @@ Stopped on and next step
 - Change grid to 20×20 
 - Update both the grid dimensions in word-search.js and the CSS column count in word-search.css. 
 - Fix logic to cut spaces for example: “docile bodies” 
+- use json file for words array instead of hardcoding it
